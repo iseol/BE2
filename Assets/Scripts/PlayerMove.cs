@@ -19,6 +19,7 @@ public class PlayerMove : MonoBehaviour
         anim = GetComponent<Animator>();
 
     }
+    
 
     void Update()
     {
@@ -104,14 +105,27 @@ public class PlayerMove : MonoBehaviour
     {
         if (collision.gameObject.tag == "Enemy")
         {
-            Debug.Log("플레이어가 맞았습니다!");
+            OnDamaged(collision.transform.position);
         }
     }
-    void OnDamaged()
+    void OnDamaged(Vector2 targetPos)
     {
         // Change Layer (Immortal Active)
         gameObject.layer = 11;
 
         spriteRenderer.color = new Color(1, 1, 1, 0.4f);
+
+        // Reaction Force
+        int dirc = transform.position.x - targetPos.x > 0 ? 1 : -1; // 자신의 위치가 장애물의 위치보다 오른쪽에 있으면 1, 아니면 -1
+        rigid.AddForce(new Vector2(dirc, 1)*7, ForceMode2D.Impulse);
+
+        // Animation
+        anim.SetTrigger("doDamaged");
+        Invoke("OffDamaged", 0.5f);
+    }
+    void OffDamaged()
+    {
+        gameObject.layer = 10;
+        spriteRenderer.color = new Color(1, 1, 1, 1);
     }
 }
