@@ -40,7 +40,14 @@ public class PlayerMove : MonoBehaviour
         // Direction Sprite
         if (Input.GetButtonDown("Horizontal"))
         {
-            spriteRenderer.flipX = Input.GetAxisRaw("Horizontal") == -1;
+            if (rigid.velocity.x < 0)
+            {
+                spriteRenderer.flipX = true;
+            }
+            else
+            {
+                spriteRenderer.flipX = false;
+            }
         }
 
         // Animation
@@ -56,7 +63,7 @@ public class PlayerMove : MonoBehaviour
 
 
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         // Key Control (Move)
         float h = Input.GetAxisRaw("Horizontal");
@@ -74,7 +81,11 @@ public class PlayerMove : MonoBehaviour
         }
 
         // Landing Platform
-        if (rigid.velocity.y < 0)
+        if (Mathf.Abs(rigid.velocity.y) < 0.001f)
+        {
+            anim.SetBool("isJumping", false);
+        }
+        else if (rigid.velocity.y < 0)
         {
             Debug.DrawRay(rigid.position, Vector3.down, new Color(0, 1, 0));
 
@@ -88,5 +99,19 @@ public class PlayerMove : MonoBehaviour
                 }
             }
         }
+    }
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            Debug.Log("플레이어가 맞았습니다!");
+        }
+    }
+    void OnDamaged()
+    {
+        // Change Layer (Immortal Active)
+        gameObject.layer = 11;
+
+        spriteRenderer.color = new Color(1, 1, 1, 0.4f);
     }
 }

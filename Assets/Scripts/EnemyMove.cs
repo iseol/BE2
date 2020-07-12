@@ -29,11 +29,9 @@ public class EnemyMove : MonoBehaviour
 
         if (rayHit.collider == null)
         {
-            nextMove = nextMove * -1;
-            CancelInvoke();
-            Invoke("Think", 5);
+            Turn();
         }
-        
+
     }
     // 재귀 함수
     void Think()
@@ -47,10 +45,18 @@ public class EnemyMove : MonoBehaviour
         // Flip Sprite
         if (nextMove != 0)
         {
-            spriteRenderer.flipX = nextMove == 1;
+            Turn();
         }
         // Recursive
         float nextThinkTime = Random.Range(2f, 5f);
         Invoke("Think", nextThinkTime);
+    }
+    void Turn()
+    {
+        nextMove *= -1;
+        spriteRenderer.flipX = nextMove == 1;
+
+        CancelInvoke();
+        Invoke("Think", 2);
     }
 }
