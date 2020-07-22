@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class EnemyMove : MonoBehaviour
 {
-    Rigidbody2D rigid;
-    Animator anim;
-    SpriteRenderer spriteRenderer;
-    CapsuleCollider2D capsuleCollider;
+    public Rigidbody2D rigid;
+    public Animator anim;
+    public SpriteRenderer spriteRenderer;
+    public CapsuleCollider2D capsuleCollider;
     public int nextMove;
+    public bool isDrawRay = true;
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -25,13 +26,16 @@ public class EnemyMove : MonoBehaviour
         // Platform Check
         Vector2 frontVec = new Vector2(rigid.position.x + nextMove * 0.3f, rigid.position.y);
 
-        Debug.DrawRay(frontVec, Vector3.down, new Color(0, 1, 0));
-
-        RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 1, LayerMask.GetMask("Platform"));
-
-        if (rayHit.collider == null)
+        if (isDrawRay == true)
         {
-            Turn();
+            Debug.DrawRay(frontVec, Vector3.down, new Color(0, 1, 0));
+
+            RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 1, LayerMask.GetMask("Platform"));
+
+            if (rayHit.collider == null)
+            {
+                Turn();
+            }
         }
 
     }
@@ -68,6 +72,9 @@ public class EnemyMove : MonoBehaviour
 
         // Sprite Flip Y
         spriteRenderer.flipY = true;
+
+        // Stop Drawray
+        isDrawRay = false;
 
         // Collider Disable
         capsuleCollider.enabled = false;

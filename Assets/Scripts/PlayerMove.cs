@@ -9,10 +9,10 @@ public class PlayerMove : MonoBehaviour
     public GameManager gameManager;
     public float maxSpeed;
     public float jumpPower;
-    Rigidbody2D rigid;
-    SpriteRenderer spriteRenderer;
-    Animator anim;
-    private CapsuleCollider2D capsuleCollider;
+    public Rigidbody2D rigid;
+    public SpriteRenderer spriteRenderer;
+    public Animator anim;
+    public CapsuleCollider2D capsuleCollider;
 
     void Awake()
     {
@@ -20,16 +20,18 @@ public class PlayerMove : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider2D>();
+
+        spriteRenderer.color = new Color(0, 0, 0, 1);
     }
-    
+
 
     void Update()
     {
         // Jump 
         if (Input.GetButtonDown("Jump") && !anim.GetBool("isJumping"))
         {
-            rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
             anim.SetBool("isJumping", true);
+            rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
         }
 
 
@@ -37,7 +39,7 @@ public class PlayerMove : MonoBehaviour
         // Stop Speed
         if (Input.GetButtonUp("Horizontal"))
         {
-            rigid.velocity = new Vector2(0.005f * rigid.velocity.normalized.x, rigid.velocity.y); 
+            rigid.velocity = new Vector2(0.005f * rigid.velocity.normalized.x, rigid.velocity.y);
         }
 
         // Direction Sprite
@@ -64,7 +66,7 @@ public class PlayerMove : MonoBehaviour
         // Key Control (Move)
         float h = Input.GetAxisRaw("Horizontal");
 
-        rigid.AddForce(Vector2.right * h * 999, ForceMode2D.Impulse);
+        rigid.AddForce(Vector2.right * h * 21474364, ForceMode2D.Impulse);
 
         if (rigid.velocity.x > maxSpeed) // Right Max Speed
         {
@@ -98,7 +100,7 @@ public class PlayerMove : MonoBehaviour
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.CompareTag("Enemy"))
         {
             if (rigid.velocity.y < 0 && transform.position.y > collision.transform.position.y) // Attack
             {
@@ -112,7 +114,7 @@ public class PlayerMove : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Item")
+        if (collision.gameObject.CompareTag("Item"))
         {
             // Point
             bool isBronze = collision.gameObject.name.Contains("Bronze");
@@ -135,7 +137,7 @@ public class PlayerMove : MonoBehaviour
             // Deactive Item
             collision.gameObject.SetActive(false);
         }
-        else if (collision.gameObject.tag == "Finish")
+        else if (collision.gameObject.CompareTag("Finish"))
         {
             // Next Stage
             gameManager.NextStage();
@@ -165,7 +167,7 @@ public class PlayerMove : MonoBehaviour
 
         // Reaction Force
         int dirc = transform.position.x - targetPos.x > 0 ? 1 : -1; // 자신의 위치가 장애물의 위치보다 오른쪽에 있으면 1, 아니면 -1
-        rigid.AddForce(new Vector2(dirc, 1)*7, ForceMode2D.Impulse);
+        rigid.AddForce(new Vector2(dirc, 1) * 7, ForceMode2D.Impulse);
 
         // Animation
         anim.SetTrigger("doDamaged");
@@ -191,6 +193,11 @@ public class PlayerMove : MonoBehaviour
         rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
 
         // Destroy
-        Invoke("DeActive", 5);
+        Invoke("HidePlayer", 5);
     }
+    void HidePlayer()
+    {
+        gameObject.SetActive(false);
+    }
+
 }
