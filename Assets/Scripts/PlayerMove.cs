@@ -20,8 +20,6 @@ public class PlayerMove : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider2D>();
-
-        spriteRenderer.color = new Color(0, 0, 0, 1);
     }
 
 
@@ -66,7 +64,7 @@ public class PlayerMove : MonoBehaviour
         // Key Control (Move)
         float h = Input.GetAxisRaw("Horizontal");
 
-        rigid.AddForce(Vector2.right * h * 21474364, ForceMode2D.Impulse);
+        rigid.AddForce(Vector2.right * h * 2147436, ForceMode2D.Impulse);
 
         if (rigid.velocity.x > maxSpeed) // Right Max Speed
         {
@@ -141,7 +139,6 @@ public class PlayerMove : MonoBehaviour
         {
             // Next Stage
             gameManager.NextStage();
-
         }
     }
     void OnAttack(Transform enemy)
@@ -198,6 +195,10 @@ public class PlayerMove : MonoBehaviour
     void HidePlayer()
     {
         gameObject.SetActive(false);
+    }
+    public void VelocityZero()
+    {
+        rigid.velocity = Vector2.zero;
     }
 
 }
