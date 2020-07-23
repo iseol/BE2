@@ -7,12 +7,21 @@ using UnityEngine.Video;
 public class PlayerMove : MonoBehaviour
 {
     public GameManager gameManager;
+
+    public AudioClip audioJump;
+    public AudioClip audioAttack;
+    public AudioClip audioDamaged;
+    public AudioClip audioItem;
+    public AudioClip audioDie;
+    public AudioClip audioFinish;
+
     public float maxSpeed;
     public float jumpPower;
     public Rigidbody2D rigid;
     public SpriteRenderer spriteRenderer;
     public Animator anim;
     public CapsuleCollider2D capsuleCollider;
+    AudioSource audioSource;
 
     void Awake()
     {
@@ -20,8 +29,8 @@ public class PlayerMove : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider2D>();
+        audioSource = GetComponent<AudioSource>();
     }
-
 
     void Update()
     {
@@ -30,6 +39,7 @@ public class PlayerMove : MonoBehaviour
         {
             anim.SetBool("isJumping", true);
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+            PlaySound("JUMP");
         }
 
 
@@ -118,6 +128,9 @@ public class PlayerMove : MonoBehaviour
             bool isBronze = collision.gameObject.name.Contains("Bronze");
             bool isSilver = collision.gameObject.name.Contains("Silver");
             bool isGold = collision.gameObject.name.Contains("Gold");
+
+            PlaySound("ITEM");
+
             // 코인 가격에 따른 점수 적립
             if (isBronze)
             {
@@ -148,6 +161,8 @@ public class PlayerMove : MonoBehaviour
         // Reaction Force
         rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
 
+        PlaySound("ATTACK");
+
         // Enemy Die
         EnemyMove enemyMove = enemy.GetComponent<EnemyMove>();
         enemyMove.OnDamaged();
@@ -165,6 +180,8 @@ public class PlayerMove : MonoBehaviour
         // Reaction Force
         int dirc = transform.position.x - targetPos.x > 0 ? 1 : -1; // 자신의 위치가 장애물의 위치보다 오른쪽에 있으면 1, 아니면 -1
         rigid.AddForce(new Vector2(dirc, 1) * 7, ForceMode2D.Impulse);
+
+        PlaySound("DAMAGED");
 
         // Animation
         anim.SetTrigger("doDamaged");
@@ -189,6 +206,8 @@ public class PlayerMove : MonoBehaviour
         // Die Effect Jump
         rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
 
+        PlaySound("DIE");
+
         // Destroy
         Invoke("HidePlayer", 5);
     }
@@ -199,6 +218,31 @@ public class PlayerMove : MonoBehaviour
     public void VelocityZero()
     {
         rigid.velocity = Vector2.zero;
+    }
+    public void PlaySound(string action)
+    {
+        switch (action)
+        {
+            case "JUMP":
+                audioSource.clip = audioJump;
+                break;
+            case "ATTACK":
+                audioSource.clip = audioAttack;
+                break;
+            case "DAMAGED":
+                audioSource.clip = audioDamaged;
+                break;
+            case "ITEM":
+                audioSource.clip = audioItem;
+                break;
+            case "DIE":
+                audioSource.clip = audioDie;
+                break;
+            case "FINISH":
+                audioSource.clip = audioFinish;
+                break;
+        }
+        audioSource.Play();
     }
 
 }

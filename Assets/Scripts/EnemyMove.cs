@@ -67,23 +67,26 @@ public class EnemyMove : MonoBehaviour
     }
     public void OnDamaged()
     {
-        // Sprite Alpha
-        spriteRenderer.color = new Color(1, 1, 1, 0.4f);
+        if (!gameObject.name.Contains("Spike"))
+        {
+            // Sprite Alpha
+            spriteRenderer.color = new Color(1, 1, 1, 0.4f);
 
-        // Sprite Flip Y
-        spriteRenderer.flipY = true;
+            // Sprite Flip Y
+            spriteRenderer.flipY = true;
 
-        // Stop Drawray
-        isDrawRay = false;
+            // Stop Drawray
+            isDrawRay = false;
 
-        // Collider Disable
-        capsuleCollider.enabled = false;
+            // Collider Disable
+            capsuleCollider.enabled = false;
 
-        // Die Effect Jump
-        rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+            // Die Effect Jump
+            rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
 
-        // Destroy
-        Invoke("DeActive", 5);
+            // Destroy
+            Invoke("DeActive", 5);
+        }
     }
     void DeActive()
     {

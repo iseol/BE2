@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +13,16 @@ public class GameManager : MonoBehaviour
     public GameObject[] Stages;
     public PlayerMove player;
 
+    public Image[] UIHealth;
+    public Text UIPoint;
+    public Text UIStage;
+    public GameObject UIRestartBtn;
+
+    void Update()
+    {
+        UIPoint.text = (totalPoint + stagePoint).ToString();
+        
+    }
     public void NextStage()
     {
         if (stageIndex < Stages.Length-1)
@@ -22,6 +34,9 @@ public class GameManager : MonoBehaviour
             Stages[stageIndex].SetActive(true);
 
             PlayerReposition(); // 플레이어 위치 초기화
+
+
+            UIStage.text = $"STAGE {stageIndex+1}";
         }
         else // Game Clear
         {
@@ -29,7 +44,13 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 0;
             // Result UI
             Debug.Log("게임 클리어!");
+
+            player.PlaySound("FINISH");
             // Restat Button UI
+            UIRestartBtn.SetActive(true);
+
+            Text btnText = UIRestartBtn.GetComponentInChildren<Text>();
+            btnText.text = "Clear!";
         }
 
         totalPoint += stagePoint; // 최총 포인트에 더해주기
@@ -40,9 +61,12 @@ public class GameManager : MonoBehaviour
         if (health > 1)
         {
             health--;
+            UIHealth[health].color = new Color(1, 0.5f, 0.5f, 0.4f); 
         }
         else
         {
+            // All Health UI Off
+            UIHealth[0].color = new Color(1, 0.5f, 0.5f, 0.4f);
             // Player Die Effect
             player.OnDie();
 
@@ -50,6 +74,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("죽었습니다!");
 
             // Retry Button UI
+            UIRestartBtn.SetActive(true);
         }
     }
 
@@ -73,5 +98,10 @@ public class GameManager : MonoBehaviour
     {
         player.transform.position = new Vector3(-2.5f, -0.5f, 1);
         player.VelocityZero();
+    }
+    public void Restart()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(0);
     }
 }
