@@ -157,7 +157,10 @@ public class PlayerMove : MonoBehaviour
     void OnAttack(Transform enemy)
     {
         // Point
-        gameManager.stagePoint += 200;
+        if (!enemy.name.Contains("Spike"))
+        {
+            gameManager.stagePoint += 200;
+        }
         // Reaction Force
         rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
 
